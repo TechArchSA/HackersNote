@@ -33,6 +33,7 @@ FILES = ["scanning-and-eumerations.md", "Critical.md", "High.md", "Medium.md", "
 
 options = {}
 
+# parse options and store project name, and target lists
 OptionParser.new do |opts|
   opts.banner = "Usage: ruby gitbook_builder.rb (--project | -p <project_name>) (--targets | -t <targetlist.txt>)"
 
@@ -44,17 +45,16 @@ OptionParser.new do |opts|
   end
 end.parse
 
-p options
 
-# Dir.exists?("{PRJ_NAME}")
+
+
 # create top level folders - assets, findings
 FLDRS.each() do |folder|
   FileUtils::mkdir_p folder
 end
 
-
+# create target list and nested folders
 Dir.chdir('findings')
-# create target list
 TGT_LST.each() do |target|
   FileUtils::mkdir_p target
   Dir.chdir(target)
@@ -67,4 +67,56 @@ TGT_LST.each() do |target|
       end
     end
   Dir.chdir('..')
+end
+
+# create README.md
+File.open("README.md", "w") do |text|
+  text.puts "## #{PRJ_NAME}"
+  text.puts "## Customer Requests and Concers
+1.
+2.
+3.
+
+| Timeline | Date |
+| :--- | :--- |
+| Project Testing Start | |
+| Project Testing End | 19-October-2017 |
+
+## Applications progress
+
+| Host/IP | number of issues | Progress % | Issues | Notes | misc. |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+|  |  |  |  |   |  |
+
+
+### Point Of Contact
+| Name | email | Mobile number | Job title/Role |
+| :--- | :--- | :--- | :--- |
+| Firstname Lastname | email2@email.com | 0550000000 |  |
+
+### Source IP Addresses log
+This list has to be regulary update!
+
+| Engineer 1 | Engineer 2 |
+| :--- | :--- |
+| x.x.x.x | y.y.y.y |
+|  |  |
+| |  |
+
+## Scope
+
+
+**Approache:**
+
+**IP ranges**
+
+**Domains**
+
+**Credetials**
+
+## Leftovers to clean
+| Host | URL/Files | discription |
+| :--- | :--- | :--- |
+|  |  |
+"
 end
