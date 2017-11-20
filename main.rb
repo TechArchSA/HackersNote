@@ -30,6 +30,7 @@ PRJ_NAME = "Project1-Q1"
 TGT_LST = ["google.com","bing-microsoft.com","yahoo.com","reddit.com"]
 FLDRS = ["findings", "assets"]
 FILES = ["scanning-and-eumerations.md", "Critical.md", "High.md", "Medium.md", "Low.md"]
+CWD = Dir.getwd # save TLD directory
 
 options = {}
 
@@ -70,6 +71,7 @@ TGT_LST.each() do |target|
 end
 
 # create README.md
+Dir.chdir(CWD)
 File.open("README.md", "w") do |text|
 
   text.puts "## #{PRJ_NAME}"
