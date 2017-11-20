@@ -1,4 +1,4 @@
-"""
+=begin
 
 1- take cli arguments, store them in variables
 2- create folders, and files
@@ -21,7 +21,8 @@ projectname/
         -- scanning and enumeration.md
     SUMMARY.MD
     README.MD
-"""
+=end
+
 
 require 'optparse'
 require 'fileutils' # for nested directories
@@ -123,3 +124,17 @@ This list has to be regulary update!
 |  |  |
 "
 end
+
+# Create SUMMARY.md
+=begin
+# Summary
+
+* [Findings](findings/findings.md)
+* [moi.gov.sa \| 193.47.102.13](findings/host1/host1.md)
+* [Scanning & Enumeration](findings/host1/scanning-and-enumeration.md)
+* [Critical](findings/host1/critical.md)
+* [High](findings/host1/high.md)
+* [Medium](findings/host1/medium.md)
+* [Notes](notes.md)
+
+=end
