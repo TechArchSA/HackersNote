@@ -54,8 +54,8 @@ end.parse
 FLDRS.each() do |folder|
   FileUtils::mkdir_p folder
 end
-
 # create target list and nested folders
+File.open("findings/findings.md","w")
 Dir.chdir('findings')
 TGT_LST.each() do |target|
   FileUtils::mkdir_p target
@@ -138,3 +138,13 @@ end
 * [Notes](notes.md)
 
 =end
+
+File.open("SUMMARY.md", "w") do |text|
+  text.puts "# Summary
+
+* [Findings](findings/findings.md)
+  * []()
+    * [Scanning and Enumeration]()
+
+            "
+end
