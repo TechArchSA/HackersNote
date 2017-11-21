@@ -1,5 +1,5 @@
-=begin
 
+=begin
 1- take cli arguments, store them in variables
 2- create folders, and files
 3- edit summary.md
@@ -13,138 +13,63 @@ projectname/
       -- files/
     - findings/
       - host 1/
-        -- critical.md
-        -- High.md
-        -- etc
+        - host1
+        - scanning_and_enumeration.md
+        - critical.md
+        - high.md
+        - medium.md
+        - low.md
+        - informational.md
+        - notes
       - host 2/
-        -- critical.md
-        -- scanning and enumeration.md
+        - README.md
+        - scanning_and_enumeration.md
+        - critical.md
+        - high.md
+        - medium.md
+        - low.md
+        - informational.md
+        - notes
+    book.json
     SUMMARY.MD
     README.MD
 =end
-
-
 require 'optparse'
 require 'fileutils' # for nested directories
 
-PRJ_NAME = "Project1-Q1"
-TGT_LST = ["google.com","bing-microsoft.com","yahoo.com","reddit.com"]
-FLDRS = ["findings", "assets"]
-FILES = ["scanning-and-eumerations.md", "Critical.md", "High.md", "Medium.md", "Low.md"]
-CWD = Dir.getwd # save TLD directory
 
-options = {}
 
-# parse options and store project name, and target lists
-OptionParser.new do |opts|
-  opts.banner = "Usage: ruby gitbook_builder.rb (--project | -p <project_name>) (--targets | -t <targetlist.txt>)"
 
-  opts.on("-p", "--project", "Projects name") do |v|
-    p v
+projectname, targetlist  = ARGV
+
+if File.file? targetlist
+  # list = File.readlines(targetlist).map(&:chomp)
+  @list = File.read(targetlist).split("\n")
+end
+
+# projectname
+# Dir.mkdir projectname
+
+# main files
+
+
+# def create(name, content)
+#   File.write name, "##{content.split('.').first}")
+# end
+
+prj_name = 'project1'
+
+%w[book.json SUMMARY.MD README.MD].each do |file|
+  # Dir.rm_f(file) if File.exist?(file)
+  File.write ( File.join(prj_name, file), "##{file.split('.').first}")
+end
+
+
+prj_files = %W[critical.md hight.md medium.md low.md informational.md scanning_and_enumeration.md notes.md]
+@list.each do |folder|
+  FileUtils.mkdir_p(File.join(prj_name, 'findings', folder))
+  prj_files << "#{folder}.md"
+  prj_files.each do |file|
+    File.write File.join(prj_name, 'findings', folder, file), "##{file.split('.').first}"
   end
-  opts.on("-t", "--targets", "Text File containint targets list") do |v|
-    #p v
-  end
-end.parse
-
-
-
-
-# create top level folders - assets, findings
-FLDRS.each() do |folder|
-  FileUtils::mkdir_p folder
-end
-# create target list and nested folders
-File.open("findings/findings.md","w")
-Dir.chdir('findings')
-TGT_LST.each() do |target|
-  FileUtils::mkdir_p target
-  Dir.chdir(target)
-    # create md file inside each
-    FILES.each() do |file|
-
-      File.open(file, "w") do | text|
-        text.puts "## #{file}"
-
-      end
-    end
-  Dir.chdir('..')
-end
-
-# create README.md
-Dir.chdir(CWD)
-File.open("README.md", "w") do |text|
-
-  text.puts "## #{PRJ_NAME}"
-  text.puts "## Customer Requests and Concers
-1.
-2.
-3.
-
-| Timeline | Date |
-| :--- | :--- |
-| Project Testing Start | |
-| Project Testing End | 19-October-2017 |
-
-## Applications progress
-
-| Host/IP | number of issues | Progress % | Issues | Notes | misc. |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-|  |  |  |  |   |  |
-
-
-### Point Of Contact
-| Name | email | Mobile number | Job title/Role |
-| :--- | :--- | :--- | :--- |
-| Firstname Lastname | email2@email.com | 0550000000 |  |
-
-### Source IP Addresses log
-This list has to be regulary update!
-
-| Engineer 1 | Engineer 2 |
-| :--- | :--- |
-| x.x.x.x | y.y.y.y |
-|  |  |
-| |  |
-
-## Scope
-
-
-**Approache:**
-
-**IP ranges**
-
-**Domains**
-
-**Credetials**
-
-## Leftovers to clean
-| Host | URL/Files | discription |
-| :--- | :--- | :--- |
-|  |  |
-"
-end
-
-# Create SUMMARY.md
-=begin
-# Summary
-
-* [Findings](findings/findings.md)
-* [moi.gov.sa \| 193.47.102.13](findings/host1/host1.md)
-* [Scanning & Enumeration](findings/host1/scanning-and-enumeration.md)
-* [Critical](findings/host1/critical.md)
-* [High](findings/host1/high.md)
-* [Medium](findings/host1/medium.md)
-* [Notes](notes.md)
-
-=end
-
-File.open("SUMMARY.md", "w") do |text|
-  text.puts "# Summary
-
-* [Findings](findings/findings.md)
-  * []()
-    * [Scanning and Enumeration]()
-
-            "
 end
