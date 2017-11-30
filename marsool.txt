@@ -1,0 +1,12 @@
+MarsoolMobileApp
+mrsool.co
+forms.mrsool.co
+backend.mrsool.co
+api.mrsool.co
+DatabaseMaster
+Reader1
+Reader2
+Backend_52.27.234.150
+XmppLandingPage_52.33.251.4
+Sidekiq_35.162.10.187
+redis_35.162.10.187

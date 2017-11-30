@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 # TechArch: www.techarch.com.sa
-# Sabri   : @KINGSABRI, @Asim
+# @author : Sabri <@KINGSABRI>, Asim
 #
 # Gitbook project builder for penetration test projects
 #
@@ -27,6 +27,16 @@ module MakeMakefile::Logging
   @logfile = File::NULL
 end
 
+def ask(question, expected_answer)
+  answer = ''
+  until answer.match?(expected_answer)
+    answer = Readline.readline(question, true)
+  end
+  return answer
+end
+
+
+
 #
 # GitbookBuild, the main class
 #
@@ -40,6 +50,7 @@ class GitbookBuilder  # TODO - write README
     build_gitbook_files(project_name)
     build_project_files(project_name, target_list)
     build_summary(project_name)
+    general_fixes(project_name)
 
     puts '[+] '.bold + 'Done!'
   end
@@ -48,7 +59,7 @@ class GitbookBuilder  # TODO - write README
   def self.set_env(project_name, target_list)
     if Dir.exist?(project_name)
       rename = "#{project_name}_#{Time.now.to_i}"
-      puts '[-] '.bold + "Renaming Exisiting directory '#{project_name}' to '#{rename}'"
+      puts '[-] '.bold + "Renaming Existing directory '#{project_name}' to '#{rename}'"
       FileUtils.mv(project_name, rename)
     end
     puts "[-]".bold + " Creating #{project_name} directory"
@@ -125,7 +136,7 @@ class GitbookBuilder  # TODO - write README
           next if exception.include? path.first
         end
 
-        index = "#{pos * path.index(path.last)}* "  # just calcualtes how many space needed for the current file in summary file
+        index = "#{pos * path.index(path.last)}* "  # just calculates how many spaces needed for the current file in summary file
         title = path.last.split('.').first.capitalize
         uri   = path.join('/')
         print "\r#{index}[#{title}](#{uri})".cls_upline
@@ -138,11 +149,67 @@ class GitbookBuilder  # TODO - write README
     end
   end
 
+  # TODO
+  # fix book.json
+  #
+  def self.general_fixes(project)
+    File.write("#{project}/book.json", '{ }')
+    readme = <<~README
+    # #{project}
+    ## Customer Requests and Concerns
+    1.
+    2.
+    3.
+    
+    | Timeline | Date |
+    | :--- | :--- |
+    | Project Testing Start | |
+    | Project Testing End | 19-October-2017 |
+    
+    ## Applications progress
+    
+    | Host/IP | number of issues | Progress % | Issues | Notes | misc. |
+    | :--- | :--- | :--- | :--- | :--- | :--- |
+    |  |  |  |  |   |  |
+    #{@list.map {|host| "|#{host}  |  |  |  |  |  |" }.join("\n")}
+    
+    ### Point Of Contact
+    | Name | email | Mobile number | Job title/Role |
+    | :--- | :--- | :--- | :--- |
+    | Firstname Lastname | email2@email.com | 0550000000 |  |
+    
+    ### Source IP Addresses log
+    This list has to be regularly update!
+    
+    | Engineer 1 | Engineer 2 |
+    | :--- | :--- |
+    | x.x.x.x | y.y.y.y |
+    | x.x.x.x | y.y.y.y |
+    | x.x.x.x | y.y.y.y |
+    
+    ## Scope
+    
+    
+    **Approach:**
+    
+    **IP ranges**
+    
+    **Domains**
+    
+    **Credentials**
+    
+    ## Clean up
+    | Host | URL/Files | Description |
+    | :--- | :--- | :--- |
+    |  |  |
+    README
+    File.write("#{project}/README.md", readme)
+  end
 end
 
 # TODO
 class Git
-  def self.help?
+  def self.need_help?
     help = nil
     until help =~ /[y|n]/i
       print '[>] '.bold + 'Do you want me to help you configure the repository? [Y/n]: '
@@ -155,29 +222,34 @@ class Git
     end
   end
 
-  def self.git_setup(project)
+  def self.setup(project)
     puts '[+] '.bold + 'Git Setup:'.bold.underline
     git = find_executable0 'git'
-    puts git ? '[>] '.bold + "Found 'git' installed!" : "git command is not install."
 
-    if help?
-      puts 'yyyy'
+    if git
+      puts '[>] '.bold + "Found 'git' installed!"
+      puts '[-] '.bold + "Initiating local git repository."
+      Dir.chdir project
+      `git init`
+      `git add *`
+      `git commit -m 'Initial #{project} commit'`
     else
-      puts 'nnnn'
+      puts '[>] '.bold + "git command is not install."
+      puts dont_forget(project)
     end
 
   end
 
-  def holderrrr
+  def dont_forget(project)
     "
     > Create a new project repository. Use naming schema
       example:
       [ServiceTag]_[CustomerName]_[TestType]_[Date]
       PT_AwesomeCustomer_WebApp_01-01-2030
-    git remote set-url origin https://github.com/TechArchSA/#{project_name}.git
+    git remote set-url origin https://github.com/TechArchSA/#{project}.git
     git push origin master
-    git checkout -b #{your_name}
-    git push origin #{your_name}
+    git checkout -b YourName
+    git push origin YourName
     "
   end
 end
@@ -220,6 +292,7 @@ begin
   case
   when options[:project] && options[:list]
     GitbookBuilder.build(options[:project], options[:list])
+    Git.setup(options[:project]) if Git.need_help?
   when options[:project].nil? && options[:list].nil?
     puts banner
     puts option_parser
