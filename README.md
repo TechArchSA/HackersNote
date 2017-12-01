@@ -29,7 +29,7 @@ Gitbook Builder - Helps pentesters to build gitbook structure for PT engagements
 
 Help menu:
    -p, --project PROJECT_NAME       Project Name
-   -l, --list TARGET_LIST           Text file contains list of targets
+   -l, --list TARGET_LIST           The target name or a text file contains list of targets
    -h, --help                       Show this help message
 
 Usage:
