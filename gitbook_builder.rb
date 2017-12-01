@@ -40,67 +40,103 @@ end
 #
 # GitbookBuild, the main class
 #
-class GitbookBuilder  # TODO - write README
+class GitbookBuilder
 
+  def initialize
+    @project_name = nil
+    @target_list  = nil
+  end
   # Builder wrapper
-  def self.build(project_name, target_list)
+  def build(project_name, target_list)
+    @project_name = project_name
+    @target_list  = target_list
+
     puts '[+] '.bold + 'Gitbook Setup:'.bold.underline
-    target_list = set_env(project_name, target_list)
 
-    build_gitbook_files(project_name)
-    build_project_files(project_name, target_list)
-    build_summary(project_name)
-    general_fixes(project_name)
+    set_env
+    build_gitbook_files
+    build_targets_files
+    general_fixes
 
-    puts '[+] '.bold + 'Done!'
+    puts
+    puts '[+] '.bold + "Done!"
   end
 
   # set environment requirements
-  def self.set_env(project_name, target_list)
-    if Dir.exist?(project_name)
-      rename = "#{project_name}_#{Time.now.to_i}"
-      puts '[-] '.bold + "Renaming Existing directory '#{project_name}' to '#{rename}'"
-      FileUtils.mv(project_name, rename)
-    end
-    puts "[-]".bold + " Creating #{project_name} directory"
-    Dir.mkdir project_name
+  def set_env
+    set_project_dir
+    set_targets_list
+    Dir.chdir @project_path
+  end
 
-    if File.file? target_list
-      # @list = File.open(target_list).split("\n")
-      # @list = File.open(target_list).each_line(chomp: true).reject(&:nil?)
-      @list = File.open(target_list).each_line(chomp: true).reject(&:nil?)
-      return @list
+  def set_project_dir
+    @project_path = Pathname.new(@project_name).basename
+
+    if Dir.exist?(@project_path)
+      rename = "#{@project_path}_#{Time.now.to_i}"
+      puts '[-] '.bold + "Renaming Existing directory '#{@project_path}' to '#{rename}'"
+      FileUtils.mv(@project_path, rename)
+    end
+
+    puts '[-] '.bold + "Creating #{@project_name} directory"
+    Dir.mkdir @project_name
+  end
+
+  # check targets list,
+  # if file read each line as a target,
+  # if file not exists, consider the given name as a target
+  # @return Array of target names
+  def set_targets_list
+    if File.file? @target_list
+      @list_of_targets = File.open(@target_list).each_line(chomp: true).map(&:strip).reject(&:nil?).reject(&:empty?)
     else
-      puts '[!] Please enter a proper file, wtf!'
-      FileUtils.rm_rf(project_name)
-      exit!
+      puts "[!] No targets list file, assuming '#{@target_list}' as a target name."
+      @list_of_targets = [@target_list]
     end
   end
 
-  # build the main files
-  def self.build_gitbook_files(project_name)
-    puts '[-] '.bold + 'Creating main files.'
+  # build gitbook's main files such as book.json, SUMMARY.md and README.md
+  def build_gitbook_files
+    puts '[-] '.bold + "Creating gitbook's main files.'"
     prj_files = %w[book.json SUMMARY.md README.md]
     prj_files.each do |file|
-      new_file = File.join(project_name, file)
-      File.write(new_file, "# #{file.split('.').first.capitalize}")
+      File.write(file, "# #{file.split('.').first.capitalize}\n\n")
     end
   end
 
   # build project related files
-  def self.build_project_files(project_name, target_list)
-    puts '[-] '.bold + "Creating target's files and directories."
-    trgt_files = %W[scanning_and_enumeration.md critical.md high.md medium.md low.md informational.md notes.md]
-    target_list.each do |folder|
-      new_dir = File.join(project_name, folder)
-      FileUtils.mkdir_p(new_dir)
-      trgt_files.unshift "#{folder}.md"
+  def build_targets_files
+    puts '[-] '.bold + "Creating targets' files and directories."
+    target_main_files = %W[scanning_and_enumeration.md critical.md high.md medium.md low.md informational.md notes.md]
 
-      trgt_files.each do |file|
-        file_path = File.join(project_name, folder, file)
-        File.write(file_path, "# #{file.split('.').first.capitalize}")
+    @list_of_targets.each do |target|
+      target_files = target_main_files.dup
+      target_files.unshift "#{target}.md"
+      Dir.mkdir(target)
+      # create_summary_record("#{target}/#{target}.md")
+      create_summary_record(target)
+
+      target_files.each do |t_file|
+        file_path = File.join(target, t_file)
+        heading1 = t_file.split('.md').first.capitalize   # Each file's title
+        File.write(file_path, "# #{heading1}\n\n")
+        create_summary_record(file_path.to_s) unless heading1 =~ /#{target}/i
       end
+
     end
+  end
+
+  def create_summary_record(file_path)
+    record = File.open('SUMMARY.md', 'a+')
+    path = File.split file_path
+    title = path.last.split('.md').first.capitalize
+    path.delete_if {|p| p == '.'}
+    align = "#{'  ' * path.index(path.last)}* "
+    file_path = "#{file_path}/#{file_path}.md" if File.directory? file_path
+    the_record = "#{align}[#{title}](#{file_path})"
+    record.puts the_record
+    print "\r#{the_record}".cls_upline
+    sleep 0.02
   end
 
   # SUMMARY structure
@@ -115,95 +151,86 @@ class GitbookBuilder  # TODO - write README
   #     * [Notes](notes.md)
   #   * [Host 2](findings/host2/host2.md)
   #     * ....
-  def self.build_summary(project)
-    root_path = Pathname.new(project).basename
-    puts '[-] '.bold + "Changing directory to #{root_path}."
-    summary_path = File.join(root_path, 'SUMMARY.md')
-    file_list = Find.find("#{root_path}/")
+  def build_gitbook_summary
+    file_list = Find.find('.')
     sorted    = file_list.sort_by {|file| File.mtime(file)}.map {|path| path.split('/')}  # Sort fy by creation as its been created by #build
-    pos = '  '
+    exception = ['SUMMARY.md', 'book.json', 'README.md', nil]  #  we don't want to include these files in SUMMARY records, remove them from the array
 
     puts '[-] '.bold + "Generating 'SUMMARY.md' file's records."
-    File.open(summary_path, 'a+') do |record|
-      record.puts "\n\n"
+    record = File.open('SUMMARY.md', 'a+')
+    record.puts "\n\n"
+    sorted.each do |path|
+      path.delete_if {|p| p == '.'}
+      next if exception.include? path.first
 
-      # we don't need to index these files
-      # remove them from the array
-      sorted.each do |path|
-        if path.first == project
-          path.shift
-          exception = ['SUMMARY.md', 'book.json', nil]
-          next if exception.include? path.first
-        end
-
-        index = "#{pos * path.index(path.last)}* "  # just calculates how many spaces needed for the current file in summary file
-        title = path.last.split('.').first.capitalize
-        uri   = path.join('/')
-        print "\r#{index}[#{title}](#{uri})".cls_upline
-
-        record.puts "#{index}[#{title}](#{uri})" #index + "[#{title}]" + "(#{uri})"
-        sleep 0.1
+      align = "#{'  ' * path.index(path.last)}* "       # just calculates how many alignment spaces are needed for the current file in summary file
+      title = path.last.capitalize   # File tile in summary [title](uri)
+      uri   = path.join('/')
+      if File.directory? uri
+        the_record = "#{align}[#{title}](#{uri}.md)"
+      else
+        the_record = "#{align}[#{title}](#{uri})"
       end
-      print ''.mv_down.cls_upline
-
+      print "\r#{the_record}".cls_upline
+      record.puts the_record #index + "[#{title}]" + "(#{uri})"
+      sleep 0.1
     end
   end
 
   # TODO
   # fix book.json
   #
-  def self.general_fixes(project)
-    File.write("#{project}/book.json", '{ }')
+  def general_fixes
+    File.write('book.json', '{ }')
     readme = <<~README
-    # #{project}
-    ## Customer Requests and Concerns
-    1.
-    2.
-    3.
-    
-    | Timeline | Date |
-    | :--- | :--- |
-    | Project Testing Start | |
-    | Project Testing End | 19-October-2017 |
-    
-    ## Applications progress
-    
-    | Host/IP | number of issues | Progress % | Issues | Notes | misc. |
-    | :--- | :--- | :--- | :--- | :--- | :--- |
-    |  |  |  |  |   |  |
-    #{@list.map {|host| "|#{host}  |  |  |  |  |  |" }.join("\n")}
-    
-    ### Point Of Contact
-    | Name | email | Mobile number | Job title/Role |
-    | :--- | :--- | :--- | :--- |
-    | Firstname Lastname | email2@email.com | 0550000000 |  |
-    
-    ### Source IP Addresses log
-    This list has to be regularly update!
-    
-    | Engineer 1 | Engineer 2 |
-    | :--- | :--- |
-    | x.x.x.x | y.y.y.y |
-    | x.x.x.x | y.y.y.y |
-    | x.x.x.x | y.y.y.y |
-    
-    ## Scope
-    
-    
-    **Approach:**
-    
-    **IP ranges**
-    
-    **Domains**
-    
-    **Credentials**
-    
-    ## Clean up
-    | Host | URL/Files | Description |
-    | :--- | :--- | :--- |
-    |  |  |
+      # #{@project_name}
+      ## Customer Requests and Concerns
+      1.
+      2.
+      3.
+
+      | Timeline | Date |
+      | :--- | :--- |
+      | Project Testing Start | |
+      | Project Testing End | 19-October-2017 |
+
+      ## Applications progress
+
+      | Host/IP | # of issues | Progress % | Issues | Notes | misc. |
+      | :--- | :--- | :--- | :--- | :--- | :--- |
+      #{@list_of_targets.map {|host| "|#{host}  |  |  |  |  |  |" }.join("\n")}
+
+      ### Point Of Contact
+      | Name | email | Mobile number | Job title/Role |
+      | :--- | :--- | :--- | :--- |
+      | Firstname Lastname | email2@email.com | 0550000000 |  |
+
+      ### Source IP Addresses log
+      This list has to be regularly update!
+
+      | Engineer 1 | Engineer 2 |
+      | :--- | :--- |
+      | x.x.x.x | y.y.y.y |
+      | x.x.x.x | y.y.y.y |
+      | x.x.x.x | y.y.y.y |
+
+      ## Scope
+
+
+      **Approach:**
+
+      **IP ranges**
+
+      **Domains**
+
+      **Credentials**
+
+      ## Clean up
+      | Host | URL/Files | Description |
+      | :--- | :--- | :--- |
+      |  |  |
     README
-    File.write("#{project}/README.md", readme)
+    File.write('README.md', readme)
   end
 end
 
@@ -212,6 +239,8 @@ class Git
   def self.need_help?
     help = nil
     until help =~ /[y|n]/i
+      puts
+      puts '[+] '.bold + 'Git Setup:'.bold.underline
       print '[>] '.bold + 'Do you want me to help you configure the repository? [Y/n]: '
       help = gets.chomp
     end
@@ -289,9 +318,10 @@ option_parser.on_tail "\nExample:\n".underline + "  ruby #{__FILE__} --project P
 
 begin
   option_parser.parse!
+  gitbook = GitbookBuilder.new
   case
   when options[:project] && options[:list]
-    GitbookBuilder.build(options[:project], options[:list])
+    gitbook.build(options[:project], options[:list])
     Git.setup(options[:project]) if Git.need_help?
   when options[:project].nil? && options[:list].nil?
     puts banner
