@@ -42,10 +42,6 @@ end
 #
 class GitbookBuilder
 
-  def initialize
-    @project_name = nil
-    @target_list  = nil
-  end
   # Builder wrapper
   def build(project_name, target_list)
     @project_name = project_name
@@ -56,6 +52,7 @@ class GitbookBuilder
     set_env
     build_gitbook_files
     build_targets_files
+    build_project_readme
     general_fixes
 
     puts
@@ -69,6 +66,7 @@ class GitbookBuilder
     Dir.chdir @project_path
   end
 
+  # set the project main directory
   def set_project_dir
     @project_path = Pathname.new(@project_name).basename
 
@@ -126,6 +124,7 @@ class GitbookBuilder
     end
   end
 
+  # Create summary records @see #build_target_files
   def create_summary_record(file_path)
     record = File.open('SUMMARY.md', 'a+')
     path = File.split file_path
@@ -139,49 +138,8 @@ class GitbookBuilder
     sleep 0.02
   end
 
-  # SUMMARY structure
-  #
-  # * [Introduction](README.md)
-  # * [Findings](findings/findings.md)
-  #   * [Host 1](findings/host1/host1.md)
-  #     * [Scanning & Enumeration](findings/host1/scanning-and-enumeration.md)
-  #     * [Critical](findings/host1/critical.md)
-  #     * [High](findings/host1/high.md)
-  #     * [Medium](findings/host1/medium.md)
-  #     * [Notes](notes.md)
-  #   * [Host 2](findings/host2/host2.md)
-  #     * ....
-  def build_gitbook_summary
-    file_list = Find.find('.')
-    sorted    = file_list.sort_by {|file| File.mtime(file)}.map {|path| path.split('/')}  # Sort fy by creation as its been created by #build
-    exception = ['SUMMARY.md', 'book.json', 'README.md', nil]  #  we don't want to include these files in SUMMARY records, remove them from the array
-
-    puts '[-] '.bold + "Generating 'SUMMARY.md' file's records."
-    record = File.open('SUMMARY.md', 'a+')
-    record.puts "\n\n"
-    sorted.each do |path|
-      path.delete_if {|p| p == '.'}
-      next if exception.include? path.first
-
-      align = "#{'  ' * path.index(path.last)}* "       # just calculates how many alignment spaces are needed for the current file in summary file
-      title = path.last.capitalize   # File tile in summary [title](uri)
-      uri   = path.join('/')
-      if File.directory? uri
-        the_record = "#{align}[#{title}](#{uri}.md)"
-      else
-        the_record = "#{align}[#{title}](#{uri})"
-      end
-      print "\r#{the_record}".cls_upline
-      record.puts the_record #index + "[#{title}]" + "(#{uri})"
-      sleep 0.1
-    end
-  end
-
-  # TODO
-  # fix book.json
-  #
-  def general_fixes
-    File.write('book.json', '{ }')
+  # README.md generator
+  def build_project_readme
     readme = <<~README
       # #{@project_name}
       ## Customer Requests and Concerns
@@ -216,7 +174,6 @@ class GitbookBuilder
 
       ## Scope
 
-
       **Approach:**
 
       **IP ranges**
@@ -231,6 +188,12 @@ class GitbookBuilder
       |  |  |
     README
     File.write('README.md', readme)
+  end
+
+  # general fixes
+  def general_fixes
+    # fix for book.json
+    File.write('book.json', '{ }')
   end
 end
 
