@@ -5,7 +5,7 @@ The main target of this script is to make building [gitbook](https://www.gitbook
 ## Usage
 
 ```
-gitbook_builder.rb -h
+ruby gitbook_builder.rb -h
 
               ______
         '!!""""""""""""*!!'
