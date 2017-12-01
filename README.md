@@ -1,6 +1,6 @@
 # Gitbook Builder
 It's a Ruby script creates a gitbook compatible structure for penetration test and red team projects 
-The main target of this script is to make building gitbook project for a new PT/RT engagement easy.
+The main target of this script is to make building [gitbook](https://www.gitbook.com/editor) project for a new PT/RT engagement easy.
 
 ## Usage
 
