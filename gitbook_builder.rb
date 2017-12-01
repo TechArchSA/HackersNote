@@ -278,6 +278,7 @@ option_parser.on('-l', '--list TARGET_LIST' , 'The target name or a text file co
 option_parser.on('-h', '--help', 'Show this help message') {puts banner , option_parser; exit!}
 option_parser.on_tail "\nUsage:\n".underline + "  ruby #{__FILE__} --project <project_name> --list <targetlist.txt>"
 option_parser.on_tail "\nExample:\n".underline + "  ruby #{__FILE__} --project PT_CustomerName_WebApp_01-01-2030 --list target_list.txt\n\n"
+option_parser.on_tail "\nExample:\n".underline + "  ruby #{__FILE__} -p PT_CustomerName_WebApp_01-01-2030 -l example.com\n\n"
 
 begin
   option_parser.parse!
