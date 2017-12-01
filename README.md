@@ -5,7 +5,7 @@ The main target of this script is to make building [gitbook](https://www.gitbook
 ## Usage
 
 ```
-ruby gitbook_builder.rb -h
+gitbook_builder.rb -h
 
               ______
         '!!""""""""""""*!!'
@@ -33,11 +33,12 @@ Help menu:
    -h, --help                       Show this help message
 
 Usage:
-  ruby gitbook_builder.rb --project <project_name> --list <targetlist.txt>
+  ruby ./gitbook_builder.rb --project <project_name> --list <targetlist.txt>
 
 Example:
-  ruby gitbook_builder.rb --project PT_CustomerName_WebApp_01-01-2030 --list target_list.txt
-  ruby gitbook_builder.rb -p PT_CustomerName_WebApp_01-01-2030 -l example.com
+  ruby ./gitbook_builder.rb --project PT_CustomerName_WebApp_01-01-2030 --list target_list.txt
+  ruby ./gitbook_builder.rb -p PT_CustomerName_WebApp_01-01-2030 -l example.com
+
 ```
 
 ## Document Structure
