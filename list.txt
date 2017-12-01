@@ -1,4 +1,0 @@
-google.com
-bing.com
-yahoo.com
-github.com
