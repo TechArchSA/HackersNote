@@ -39,6 +39,31 @@ Example:
   ruby gitbook_builder.rb --project PT_CustomerName_WebApp_01-01-2030 --list target_list.txt
 ```
 
+## Document Structure
+The script create a tree of folders and files for each target 
+
+- Project Name
+  - Target1/
+    - target1.md
+    - scanning_and_enumeration.md
+    - critical 
+    - high.md
+    - medium.md
+    - low
+    - informational.md
+    - notes
+  - TargetX/ 
+    - target1.md
+    - scanning_and_enumeration.md
+    - critical 
+    - high.md
+    - medium.md
+    - low
+    - informational.md
+    - notes
+  - README.md
+  - book.json
+
 ## Contribution 
 Yes!, PR 
 ## reporting issues
