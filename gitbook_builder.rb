@@ -103,6 +103,15 @@ class GitbookBuilder
   end
 
   # build project related files
+  # @example:
+  # targetX/
+  #   scanning_and_enumeration.md
+  #   critical.md
+  #   high.md
+  #   medium.md
+  #   low.md
+  #   informational.md
+  #   notes.md
   def build_targets_files
     puts '[-] '.bold + "Creating targets' files and directories."
     target_main_files = %W[scanning_and_enumeration.md critical.md high.md medium.md low.md informational.md notes.md]
@@ -194,6 +203,8 @@ class GitbookBuilder
   def general_fixes
     # fix for book.json
     File.write('book.json', '{ }')
+    # Create files directory, general place for project related files and scripts
+    Dir.mkdir 'files'
   end
 end
 
