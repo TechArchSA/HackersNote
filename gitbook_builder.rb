@@ -56,7 +56,7 @@ class GitbookBuilder
     general_fixes
 
     puts
-    puts '[+] '.bold + "Done!"
+    puts '[+] '.bold + "\nHappy Hacking!"
   end
 
   # set environment requirements
@@ -66,7 +66,7 @@ class GitbookBuilder
     Dir.chdir @project_path
   end
 
-  # set the project main directory
+  # set the project main directory @see #set_env
   def set_project_dir
     @project_path = Pathname.new(@project_name).basename
 
@@ -80,7 +80,7 @@ class GitbookBuilder
     Dir.mkdir @project_name
   end
 
-  # check targets list,
+  # check targets list, @see #set_env
   # if file read each line as a target,
   # if file not exists, consider the given name as a target
   # @return Array of target names
@@ -102,7 +102,8 @@ class GitbookBuilder
     end
   end
 
-  # build project related files
+  # build_targets_files builds project related files
+  #
   # @example:
   # targetX/
   #   scanning_and_enumeration.md
@@ -133,7 +134,7 @@ class GitbookBuilder
     end
   end
 
-  # Create summary records @see #build_target_files
+  # Create summary records @see #build_targets_files
   def create_summary_record(file_path)
     record = File.open('SUMMARY.md', 'a+')
     path = File.split file_path
@@ -203,7 +204,7 @@ class GitbookBuilder
   def general_fixes
     # fix for book.json
     File.write('book.json', '{ }')
-    # Create files directory, general place for project related files and scripts
+    # Create 'files' directory, general place for project related files and scripts
     Dir.mkdir 'files'
   end
 end
@@ -215,10 +216,9 @@ class Git
     until help =~ /[y|n]/i
       puts
       puts '[+] '.bold + 'Git Setup:'.bold.underline
-      print '[>] '.bold + 'Do you want me to help you configure the repository? [Y/n]: '
-      help = gets.chomp
+      help = Readline.readline('[>] '.bold + 'Do you want me to help you configure the repository? [Y/n]: ', true)
     end
-    if help =~ /y/i
+    if help =~ /y|yes/i
       return true
     else
       return false
@@ -232,7 +232,6 @@ class Git
     if git
       puts '[>] '.bold + "Found 'git' installed!"
       puts '[-] '.bold + "Initiating local git repository."
-      Dir.chdir project
       `git init`
       `git add *`
       `git commit -m 'Initial #{project} commit'`
@@ -243,16 +242,18 @@ class Git
 
   end
 
-  def dont_forget(project)
+  def self.dont_forget(project)
     "
-    > Create a new project repository. Use naming schema
+    #{'>'.bold} Create a new local repository.
       example:
-      [ServiceTag]_[CustomerName]_[TestType]_[Date]
-      PT_AwesomeCustomer_WebApp_01-01-2030
-    git remote set-url origin https://github.com/TechArchSA/#{project}.git
-    git push origin master
-    git checkout -b YourName
-    git push origin YourName
+        cd #{project}
+        git init
+        git add *
+        git commit -m 'Initial #{project} commit'
+        git remote set-url origin https://github.com/TechArchSA/#{project}.git
+        git push origin master
+        git checkout -b YourName
+        git push origin YourName
     "
   end
 end
@@ -298,7 +299,12 @@ begin
   case
   when options[:project] && options[:list]
     gitbook.build(options[:project], options[:list])
-    Git.setup(options[:project]) if Git.need_help?
+    if Git.need_help?
+      Git.setup(options[:project])
+    else
+      puts '[+] '.bold + "Ok, then don't forget to.."
+      puts Git.dont_forget(options[:project])
+    end
   when options[:project].nil? && options[:list].nil?
     puts banner
     puts option_parser
