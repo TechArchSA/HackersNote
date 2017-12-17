@@ -134,6 +134,23 @@ class GitbookBuilder
     end
   end
 
+  def build_target_notes
+    notes = <<~NOTES
+    ## To Be Checked
+    
+    
+    ## To Be Deleted
+
+    * Users
+      * sss
+      * sss
+    * Files/Directories/URL
+      * sss
+      * sss
+
+    NOTES
+  end
+
   # Create summary records @see #build_targets_files
   def create_summary_record(file_path)
     record = File.open('SUMMARY.md', 'a+')
@@ -159,8 +176,8 @@ class GitbookBuilder
 
       | Timeline | Date |
       | :--- | :--- |
-      | Project Testing Start | |
-      | Project Testing End | 19-October-2017 |
+      | Project Testing Start | 1/1/2030 |
+      | Project Testing End | 1/1/2030 |
 
       ## Applications progress
 
@@ -232,9 +249,10 @@ class Git
     if git
       puts '[>] '.bold + "Found 'git' installed!"
       puts '[-] '.bold + "Initiating local git repository."
-      `git init`
-      `git add *`
-      `git commit -m 'Initial #{project} commit'`
+      # `git init`
+      # `git add *`
+      # `git commit -m 'Initial #{project} commit'`
+      puts dont_forget(project)
     else
       puts '[>] '.bold + "git command is not install."
       puts dont_forget(project)
@@ -244,13 +262,13 @@ class Git
 
   def self.dont_forget(project)
     "
-    #{'>'.bold} Create a new local repository.
+    #{'>'.bold} Don't forget, Create a new local repository.
       example:
         cd #{project}
         git init
         git add *
         git commit -m 'Initial #{project} commit'
-        git remote set-url origin https://github.com/TechArchSA/#{project}.git
+        git remote set-url origin https://github.com/TechArchSA/#{project}.git    # github repository must be created before this command!
         git push origin master
         git checkout -b YourName
         git push origin YourName
