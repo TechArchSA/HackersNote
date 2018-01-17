@@ -9,7 +9,32 @@ The main target of this script is to make building [gitbook](https://www.gitbook
 
 ## Usage
 
-TODO: Write usage instructions here
+```
+$> hackernote -h
+
+                                 ______            ____                                                 ______              ____
+     |         |      .'.      .~      ~.|    ..''|          |`````````,         ..'''' |..          |.~      ~.`````|`````|
+     |_________|    .''```.   |          |..''    |______    |'''|'''''       .''       |  ``..      |          |    |     |______
+     |         |  .'       `. |          |``..    |          |    `.       ..'          |      ``..  |          |    |     |
+     |         |.'           `.`.______.'|    ``..|__________|      `....''             |          ``|`.______.'     |     |___________
+                                                                                                                                 v1.0.0
+      
+Hacker's Note - Helps security professionals to organize their notes in a gitbook structure for PT/RT engagements.
+
+Help menu:
+   -p, --project PROJECT_NAME       Project Name
+   -l, --list TARGET_LIST           The target name or a text file contains list of targets
+   -g, --git GIT_REPO_URL           Configure git server URL
+   -h, --help                       Show this help message
+
+Usage:
+  hackernote --project <project_name> --list <targets[.list]> --git <git server repository URL>
+
+Example:
+  hackernote --project PT_CustomerName_WebApp_01-01-2030 --list target_list.txt
+  hackernote -p PT_CustomerName_WebApp_01-01-2030 -l example.com
+  hackernote -p PT_CustomerName_WebApp_01-01-2030 -l example.com -g https://github.com/[USERNAME]/PT_CustomerName_WebApp_01-01-2030.git
+```
 
 
 ## Document Structure
@@ -36,13 +61,6 @@ The script create a tree of folders and files for each target
     - notes
   - README.md
   - book.json
-
-
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
 ## Contributing
 
