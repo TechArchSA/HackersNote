@@ -124,6 +124,7 @@ module HackerNote
       file_path = "#{file_path}/#{file_path}.md" if File.directory? file_path
       the_record = "#{align}[#{title}](#{file_path})"
       record.puts the_record
+      record.close
       print "\r#{the_record}".cls_upline
       sleep 0.1
     end
@@ -134,8 +135,8 @@ module HackerNote
       # #{@project_name}
       ## Customer Requests and Concerns
       1. No DoS Attacks
-      2.
-      3.
+      2. Automated scan should be gentle at production time 
+      3. ABCDEFG
 
       | Timeline | Date |
       | :--- | :--- |

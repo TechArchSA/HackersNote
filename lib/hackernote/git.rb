@@ -11,7 +11,7 @@ module HackerNote
       git = find_executable0 'git'
       git_cmds =
           [
-              "git init", "git add *",
+              "git init", "git add -A",
               "git commit -m 'Initial #{project} commit'",
               "git remote add origin #{git_url}"
           ]
