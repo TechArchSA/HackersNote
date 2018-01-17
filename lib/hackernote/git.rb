@@ -27,7 +27,7 @@ module HackerNote
           puts "[>] ".bold + "executing: " + "#{cmd}".dark_green
           `#{cmd}`
         end
-        puts "[!] ".dark_yellow + "Please do not forget to:".underline
+        puts "[!] ".yellow + "Please do not forget to:".underline
         git_cmds.last(3).each {|cmd| puts "$ ".bold + "#{cmd}".dark_green}
       else
         puts '[x] '.red.bold + "git command can't be found (or you didn't use '--git' switch)."
