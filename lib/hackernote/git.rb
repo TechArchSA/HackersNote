@@ -1,47 +1,41 @@
 module HackerNote
   class Git
 
-    def pwd
-      Dir.pwd
+    attr_accessor :git
+    def initialize
+      @git = find_executable0 'git'
     end
 
     # Setup git repo
     def setup(project, git_url='')
       puts '[+] '.bold + 'Git Setup:'.bold.underline
-      git = find_executable0 'git'
+
       git_cmds =
           [
-              "git init", "git add -A",
+              "git init",
+              "git add -A",
               "git commit -m 'Initial #{project} commit'",
-              "git remote add origin #{git_url}"
+              "git remote add origin #{git_url}",
+              "git push origin master",
+              "git checkout -b YourName",
+              "git push origin YourName"
           ]
-      if git
+      if @git
         puts '[>] '.bold + "Found 'git' installed!"
         puts '[-] '.bold + "Initiating local git repository."
-        git_cmds.each do |cmd|
+        git_cmds.first(4).each do |cmd|
           puts "[>] ".bold + "executing: " + "#{cmd}".dark_green
           `#{cmd}`
         end
+        puts "[!] ".dark_yellow + "Please do not forget to:".underline
+        git_cmds.last(3).each {|cmd| puts "$ ".bold + "#{cmd}".dark_green}
       else
-        puts '[x] '.red.bold + "git command can't be found."
-        puts '[!] '.yellow + "Please install 'git' command then do the following:"
-        puts dont_forget(project)
+        puts '[x] '.red.bold + "git command can't be found (or you didn't use '--git' switch)."
+        puts '[!] '.yellow + "Please install 'git' command then do the following (or use --git switch if git is installed):"
+        git_cmds.each {|cmd| puts "$> ".bold + "#{cmd}".dark_green}
       end
 
     end
 
-
-    def dont_forget(project)
-      "
-        cd #{project}
-        git init
-        git add *
-        git commit -m 'Initial #{project} commit'
-        git remote add origin https://github.com/[USERNAME]/#{project}.git
-        git push origin master
-        git checkout -b YourName
-        git push origin YourName
-    "
-    end
   end
 end

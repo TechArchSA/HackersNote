@@ -1,6 +1,7 @@
 module HackerNote
 #
 # GitbookBuild class
+#   for all gitbook related work (build gitbook files, targets files, project readme, etc)
 #
   class GitbookBuilder
 

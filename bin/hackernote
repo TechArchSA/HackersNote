@@ -41,7 +41,9 @@ begin
     when options[:project] && options[:list]
       gitbook.build(options[:project], options[:list])
       print "\r\n".cls_upline
-      puts "[+] ".green.bold + "Happy Hacking!"
+      git.git = nil
+      git.setup(options[:project], '[YOUR GIT REPOSITORY URL]')
+      puts "\n[+] ".green.bold + "Happy Hacking!"
     when options[:project].nil? && options[:list].nil?
       puts HackerNote::Utils.banner
       puts option_parser
