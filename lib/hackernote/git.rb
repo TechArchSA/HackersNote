@@ -13,7 +13,7 @@ module HackerNote
           [
               "git init", "git add *",
               "git commit -m 'Initial #{project} commit'",
-              "git remote set-url origin #{git_url}"
+              "git remote add origin #{git_url}"
           ]
       if git
         puts '[>] '.bold + "Found 'git' installed!"
@@ -37,7 +37,7 @@ module HackerNote
         git init
         git add *
         git commit -m 'Initial #{project} commit'
-        git remote set-url origin https://github.com/[USERNAME]/#{project}.git
+        git remote add origin https://github.com/[USERNAME]/#{project}.git
         git push origin master
         git checkout -b YourName
         git push origin YourName
