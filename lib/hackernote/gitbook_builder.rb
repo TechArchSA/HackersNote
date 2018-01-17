@@ -88,7 +88,6 @@ module HackerNote
           heading1 = t_file.split('.md').first.capitalize   # Each file's title
           File.write(file_path, "# #{heading1}\n\n")
           open(file_path, 'a') do |file|
-            file.puts "# #{heading1}\n\n"
             file.puts build_target_notes if heading1.include? 'Notes'
           end
           create_summary_record(file_path.to_s) unless heading1 =~ /#{target}/i
