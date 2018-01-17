@@ -28,7 +28,6 @@ option_parser.on_tail"  hackernote --project PT_CustomerName_WebApp_01-01-2030 -
 option_parser.on_tail"  hackernote -p PT_CustomerName_WebApp_01-01-2030 -l example.com"
 option_parser.on_tail"  hackernote -p PT_CustomerName_WebApp_01-01-2030 -l example.com -g https://github.com/[USERNAME]/PT_CustomerName_WebApp_01-01-2030.git\n\n"
 
-require 'pp'
 begin
   option_parser.parse!
   gitbook = HackerNote::GitbookBuilder.new
