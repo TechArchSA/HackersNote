@@ -24,8 +24,9 @@ option_parser.on('-g', '--git GIT_REPO_URL' , 'Configure git server URL') {|v| o
 option_parser.on('-h', '--help', 'Show this help message') {puts HackerNote::Utils.banner, option_parser; exit!}
 option_parser.on_tail "\nUsage:\n".underline + "  ruby #{__FILE__} --project <project_name> --list <targetlist.txt>"
 option_parser.on_tail "\nExample:".underline
-option_parser.on_tail"  ruby #{__FILE__} --project PT_CustomerName_WebApp_01-01-2030 --list target_list.txt"
-option_parser.on_tail"  ruby #{__FILE__} -p PT_CustomerName_WebApp_01-01-2030 -l example.com\n\n"
+option_parser.on_tail"  hackernote --project PT_CustomerName_WebApp_01-01-2030 --list target_list.txt"
+option_parser.on_tail"  hackernote -p PT_CustomerName_WebApp_01-01-2030 -l example.com"
+option_parser.on_tail"  hackernote -p PT_CustomerName_WebApp_01-01-2030 -l example.com -g https://github.com/[USERNAME]/PT_CustomerName_WebApp_01-01-2030.git\n\n"
 
 require 'pp'
 begin
