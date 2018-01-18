@@ -1,7 +1,8 @@
 module HackerNote
   module Utils
 
-    # fix target/project name if the target is a URL (eg. http://example.com/app1/route2/)
+    # fix target/project name if the target is a URL (eg. http://example.com/app1/route2/ to be example.com-app1-route2)
+    #
     # @return [String]
     def fix_project_naming(project)
       project.gsub(/http[:|s]+\/\//, '').gsub('/', '-').gsub(/-*$/, '')
