@@ -3,10 +3,14 @@ module HackerNote
 
     attr_accessor :git
     def initialize
+      # Find git command in the system
       @git = find_executable0 'git'
     end
 
-    # Setup git repo
+    # Setup git repository
+    #
+    # @param project [String] the project name
+    # @param git_url [String] the remote git repository URL
     def setup(project, git_url='')
       puts '[+] '.bold + 'Git Setup:'.bold.underline
 
